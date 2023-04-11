@@ -1,53 +1,47 @@
-# Silly Weather
+# Fun Weather Forecast
 
-## Imports
+# Required Libraries
 import requests
+import time
 
-## Key
-api_key = "253682c0bd759acfb4255d4aa08c3dd7"  # Replace with your OpenWeatherMap API key
+# API Configuration
+api_key = "insert key here"
 
-# Letter by letter
-
-def p(string):
-    for char in string:
+# Custom Print Function
+def custom_print(text):
+    for char in text:
         print(char, end="", flush=True)
         time.sleep(0.02)
     print("")
 
+# Retrieve Weather Data
+def fetch_weather_data(city):
+    api_url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}"
+    response = requests.get(api_url)
+    weather_data = response.json()
+    return weather_data
 
+# Display Weather Data
+def display_weather_info(weather_info):
+    current_weather = weather_info["weather"][0]["main"]
 
-# Function 1
-
-# Searches City from input
-def get_weather_data(city_name):
-    url = f"http://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={api_key}"
-    response = requests.get(url)
-    data = response.json()
-    return data
-
-# Function 2
-
-# Harvests Weather data
-def print_weather_data(weather_data):
-    weather = weather_data["weather"][0]["main"]
-
-    # Temperature
-    temperature = round(weather_data["main"]["temp"] - 273.15, 2)  # Convert from Kelvin to Celsius
+    # Temperature (Kelvin to Celsius)
+    temp_celsius = round(weather_info["main"]["temp"] - 273.15, 2)
     # Humidity
-    humidity = weather_data["main"]["humidity"]
-    # Wind speed
-    wind_speed = weather_data["wind"]["speed"]
+    humidity_percentage = weather_info["main"]["humidity"]
+    # Wind Speed
+    wind_speed_ms = weather_info["wind"]["speed"]
 
-# Communication
-    p(f"The weather in {weather_data['name']} is {weather}.")
-    p(f"The temperature is {temperature}°C.")
-    p(f"The humidity is {humidity}%.")
-    p(f"The wind speed is {wind_speed} m/s.")
+    # Output
+    custom_print(f"The weather in {weather_info['name']} is {current_weather}.")
+    custom_print(f"The temperature is {temp_celsius}°C.")
+    custom_print(f"The humidity is {humidity_percentage}%.")
+    custom_print(f"The wind speed is {wind_speed_ms} m/s.")
 
-# Input
-city_name = input("Enter the name of the city: ")
-weather_data = get_weather_data(city_name)
-if weather_data["cod"] == 200:
-    print_weather_data(weather_data)
+# User Input
+city = input("Enter the name of the city: ")
+retrieved_weather_data = fetch_weather_data(city)
+if retrieved_weather_data["cod"] == 200:
+    display_weather_info(retrieved_weather_data)
 else:
-    p("Sorry, we couldn't find that city.")
+    custom_print("Apologies, we couldn't find that city.")
